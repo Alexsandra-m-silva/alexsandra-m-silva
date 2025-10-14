@@ -36,7 +36,7 @@ scene.add(sphere);
 // Black vertical lines (thin boxes)
 const lineCount = 40;
 const lineWidth = 0.15;
-const lineHeight = 12;
+const lineHeight = window.innerHeight;
 const spacing = 0.5;
 const startX = -((lineCount / 2) * spacing);
 const startX_back = -2 * ((lineCount / 2) * spacing);
@@ -50,7 +50,7 @@ for (let i = 0; i < lineCount; i++) {
       new THREE.MeshBasicMaterial({ color: 0x000000 })
     );
     line.position.x = startX + i * spacing;
-    line.position.z = 0; // Slightly in front of the sphere
+    line.position.z = 10; // Slightly in front of the sphere
     scene.add(line);
   }
 }
@@ -64,10 +64,24 @@ for (let i = 0; i < lineCount; i++) {
       new THREE.MeshBasicMaterial({ color: 0x000000 })
     );
     line.position.x = startX_back + i * spacing;
-    line.position.z = 10; // Slightly in front of the sphere
+    line.position.z = 0; // Slightly in front of the sphere
     scene.add(line);
   }
 }
+
+// Add a cube with each side a primary color
+const cubeGeometry = new THREE.BoxGeometry(15, 10, 10);
+const cubeMaterials = [
+  new THREE.MeshBasicMaterial({ color: 0x000000 }), // right - black
+  new THREE.MeshBasicMaterial({ color: 0x08979B }), // left - blue
+  new THREE.MeshBasicMaterial({ color: 0xffff00 }), // top - yellow
+  new THREE.MeshBasicMaterial({ color: 0xff0000 }), // bottom - red
+  new THREE.MeshBasicMaterial({ color: 0x08979B }), // front - blue
+  new THREE.MeshBasicMaterial({ color: 0xffff00 })  // back - yellow
+];
+const cube = new THREE.Mesh(cubeGeometry, cubeMaterials);
+cube.position.set(-15, 4, 0); 
+scene.add(cube);
 
 // Animation loop
 function animate() {
