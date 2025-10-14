@@ -1,0 +1,17 @@
+{
+  "name": "alexsandra-m-silva",
+  "version": "1.0.0",
+  "description": "Website project",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "iwer": "^2.1.1",
+    "three": "^0.157.0"
+  },
+  "devDependencies": {
+    "vite": "^4.0.0"
+  }
+}
