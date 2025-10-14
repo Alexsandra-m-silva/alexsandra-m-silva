@@ -1,0 +1,22 @@
+[
+    "navBar",
+    {
+        "navTitle": "Alexsandra M. Silva",
+        "navItems": [
+            { "text": "Hello", "link": "#" },
+            { "text": "World", "link": "#" },
+            { "text": "Welcome", "link": "#" },
+            { "text": "Here", "link": "#" }
+        ]
+    },
+    {
+        "footer": [
+            {
+                "Title": "Isaacson, W., 2011. Steve Jobs. New York: Simon & Schuster."
+            }
+        ]
+    },
+    {
+        "pageTitle": "Thinker. Creator. Innovator."
+    }
+]
