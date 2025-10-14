@@ -1,4 +1,8 @@
 ## Hi there 👋
+# Setup 
+npm install
+npm install three
+npm install iwer
 ## Project Structure
 ```
 webxr-website
