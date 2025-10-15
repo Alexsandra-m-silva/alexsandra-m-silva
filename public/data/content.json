@@ -3,8 +3,8 @@
     {
         "navTitle": "Alexsandra M. Silva",
         "navItems": [
-            { "text": "Hello", "link": "#" },
-            { "text": "World", "link": "#" },
+            { "text": "hobbies", "link": "./Pages/hobbies.html" },
+            { "text": "World", "link": "/index.html" },
             { "text": "Welcome", "link": "#" },
             { "text": "Here", "link": "#" }
         ]

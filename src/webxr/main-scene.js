@@ -4,31 +4,31 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 // Get the canvas element from the DOM
 const canvas = document.querySelector('canvas');
 
-// Create renderer and set its canvas
+// Renderer 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-// Create a scene with a white background
+// Scene with a white background
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 
-// Create a camera
+// Camera
 const camera = new THREE.PerspectiveCamera(
   60, window.innerWidth / window.innerHeight, 0.1, 1000
 );
 camera.position.set(0, 0, 20);
 
-// Add OrbitControls for mouse interaction
+// OrbitControls for mouse interaction
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// Add ambient light
+// Ambient light
 scene.add(new THREE.AmbientLight(0xffffff, 1));
 
 // Orange sphere in the center
 const sphere = new THREE.Mesh(
   new THREE.SphereGeometry(5, 64, 64),
-  new THREE.MeshBasicMaterial({ color: 0xec7130 })
+  new THREE.MeshBasicMaterial({ color: 0xff3e00 })
 );
 sphere.position.set(0, 0, 5);
 scene.add(sphere);
@@ -64,23 +64,23 @@ for (let i = 0; i < lineCount; i++) {
       new THREE.MeshBasicMaterial({ color: 0x000000 })
     );
     line.position.x = startX_back + i * spacing;
-    line.position.z = 0; // Slightly in front of the sphere
+    line.position.z = 0; 
     scene.add(line);
   }
 }
 
-// Add a cube with each side a primary color
-const cubeGeometry = new THREE.BoxGeometry(15, 10, 10);
+// Cube
+const cubeGeometry = new THREE.BoxGeometry(150, 10, 10);
 const cubeMaterials = [
-  new THREE.MeshBasicMaterial({ color: 0x000000 }), // right - black
-  new THREE.MeshBasicMaterial({ color: 0x08979B }), // left - blue
-  new THREE.MeshBasicMaterial({ color: 0xffff00 }), // top - yellow
-  new THREE.MeshBasicMaterial({ color: 0xff0000 }), // bottom - red
-  new THREE.MeshBasicMaterial({ color: 0x08979B }), // front - blue
-  new THREE.MeshBasicMaterial({ color: 0xffff00 })  // back - yellow
+  new THREE.MeshBasicMaterial({ color: 0x000000 }), //  black
+  new THREE.MeshBasicMaterial({ color: 0x000000 }), //  black
+  new THREE.MeshBasicMaterial({ color: 0x2822dd }), //  primary blue
+  new THREE.MeshBasicMaterial({ color: 0xff0000 }), //  red
+  new THREE.MeshBasicMaterial({ color: 0x08979B }), //  blue
+  new THREE.MeshBasicMaterial({ color: 0xfaba35 })  //  yellow
 ];
 const cube = new THREE.Mesh(cubeGeometry, cubeMaterials);
-cube.position.set(-15, 4, 0); 
+cube.position.set(-(150/2)-15, 4, 0); 
 scene.add(cube);
 
 // Animation loop
