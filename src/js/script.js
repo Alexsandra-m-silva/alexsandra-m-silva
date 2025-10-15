@@ -65,7 +65,7 @@ class TemplateEngine_renderData {
                 navItems: [] //  filled from content.json
             };
             // Load nav items from JSON file
-            fetch('/src/data/content.json')
+            fetch('./data/content.json')
             .then(response => response.json())
             .then(navData => {
                 // navData[3] contains the object with page title data
