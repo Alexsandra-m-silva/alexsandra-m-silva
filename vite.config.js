@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/', // Repo name
+  base: '/',
+  build: {
+    outDir: 'docs', // build output will go into /docs 
+  },
 });
