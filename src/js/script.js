@@ -57,7 +57,7 @@ class TemplateEngine_renderData {
                 }
             };
             // Example usage
-            const tEngine = new TemplateEngine_renderData("/template.html");
+            const tEngine = new TemplateEngine_renderData("./templates/template.html");
             const data = {
                 pageTitle: "", // filled from content.json
                 footer: [], // filled from content.json
