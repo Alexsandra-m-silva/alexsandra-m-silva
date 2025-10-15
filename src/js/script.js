@@ -57,7 +57,7 @@ class TemplateEngine_renderData {
                 }
             };
             // Example usage
-            const tEngine = new TemplateEngine_renderData("/template.html");
+            const tEngine = new TemplateEngine_renderData("./template.html");
             const data = {
                 pageTitle: "", // filled from content.json
                 footer: [], // filled from content.json
@@ -65,7 +65,7 @@ class TemplateEngine_renderData {
                 navItems: [] //  filled from content.json
             };
             // Load nav items from JSON file
-            fetch('/src/data/content.json')
+            fetch('./src/data/content.json')
             .then(response => response.json())
             .then(navData => {
                 // navData[3] contains the object with page title data
