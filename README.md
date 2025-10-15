@@ -3,6 +3,11 @@
 npm install
 npm install three
 npm install iwer
+npm run dev
+
+# deploy
+npm run build
+
 ## Project Structure
 ```
 webxr-website
