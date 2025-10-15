@@ -1,16 +1,26 @@
 ## Hi there 👋
-
-<!--
-**Alexsandra-m-silva/alexsandra-m-silva** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+# Setup 
+npm install
+npm install three
+npm install iwer
+## Project Structure
+```
+webxr-website
+├── public
+│   ├── index.html         
+│   ├──           
+│   ├──       
+│   └── assets
+│       └── style.css       # Global CSS file for styling
+├── src
+│   ├── js
+│   │   ├──     
+│   │   ├──         
+│   │   └──        
+│   ├── data
+│   │   └── content.json     # JSON file containing content for the pages
+│   └── webxr
+│       └── scene.js         # Logic for managing the WebXR 3D scene
+├── package.json             # npm configuration file
+└── README.md                # Project documentation
+```
