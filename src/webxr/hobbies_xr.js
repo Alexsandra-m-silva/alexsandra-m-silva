@@ -87,6 +87,134 @@ cube.position.set(0, 0, -100); // Center of the scene
 cube.rotation.set( 0, 0, Math.PI / 3); // Front face toward user
 scene.add(cube);
 
+// Camera positions array
+const cameraPositions = [
+  { x: 0, y: 0, z: 20 }, // tennis view 1
+  { x: -149, y: 101, z: -58 }
+];
+
+let currentPositionIndex = 0;
+
+// Create navigation buttons
+function createNavigationButtons() {
+  // Create navigation container
+  const navContainer = document.createElement('div');
+  navContainer.className = 'webxr-nav-container';
+
+  // Position indicator
+  const positionIndicator = document.createElement('div');
+  positionIndicator.className = 'webxr-position-indicator';
+  
+  // Create position dots
+  const dots = [];
+  for (let i = 0; i < cameraPositions.length; i++) {
+    const dot = document.createElement('div');
+    dot.className = `webxr-position-dot ${i === currentPositionIndex ? 'active' : ''}`;
+    dot.addEventListener('click', () => {
+      currentPositionIndex = i;
+      animateCameraTo(cameraPositions[currentPositionIndex]);
+      updatePositionIndicator();
+    });
+    dots.push(dot);
+    positionIndicator.appendChild(dot);
+  }
+
+  // Left arrow button
+  const leftButton = document.createElement('button');
+  leftButton.className = `webxr-nav-button ${currentPositionIndex > 0 ? '' : 'disabled'}`;
+  leftButton.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="15,18 9,12 15,6"></polyline>
+    </svg>
+  `;
+  
+  // Right arrow button
+  const rightButton = document.createElement('button');
+  rightButton.className = `webxr-nav-button ${currentPositionIndex < cameraPositions.length - 1 ? '' : 'disabled'}`;
+  rightButton.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="9,18 15,12 9,6"></polyline>
+    </svg>
+  `;
+
+  // Add position label
+  const positionLabel = document.createElement('div');
+  positionLabel.className = 'webxr-position-label';
+  positionLabel.textContent = `View ${currentPositionIndex + 1}`;
+
+  // Update position indicator function
+  function updatePositionIndicator() {
+    dots.forEach((dot, index) => {
+      dot.className = `webxr-position-dot ${index === currentPositionIndex ? 'active' : ''}`;
+    });
+    
+    // Update button states
+    leftButton.className = `webxr-nav-button ${currentPositionIndex > 0 ? '' : 'disabled'}`;
+    rightButton.className = `webxr-nav-button ${currentPositionIndex < cameraPositions.length - 1 ? '' : 'disabled'}`;
+  }
+
+  // Assemble the navigation
+  navContainer.appendChild(leftButton);
+  navContainer.appendChild(positionLabel);
+  navContainer.appendChild(positionIndicator);
+  navContainer.appendChild(rightButton);
+
+  // Add click event listeners
+  leftButton.addEventListener('click', () => {
+    if (currentPositionIndex > 0) {
+      currentPositionIndex--;
+      animateCameraTo(cameraPositions[currentPositionIndex]);
+      updatePositionIndicator();
+      positionLabel.textContent = `Tennis View ${currentPositionIndex + 1}`;
+    }
+  });
+
+  rightButton.addEventListener('click', () => {
+    if (currentPositionIndex < cameraPositions.length - 1) {
+      currentPositionIndex++;
+      animateCameraTo(cameraPositions[currentPositionIndex]);
+      updatePositionIndicator();
+      positionLabel.textContent = `View ${currentPositionIndex + 1}`;
+    }
+  });
+
+  // Add container to the page
+  document.body.appendChild(navContainer);
+}
+
+// Smooth camera animation function
+function animateCameraTo(targetPosition) {
+  const startPosition = {
+    x: camera.position.x,
+    y: camera.position.y,
+    z: camera.position.z
+  };
+  
+  const duration = 1000; // 1 second animation
+  const startTime = Date.now();
+  
+  function updateCamera() {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    
+    // Smooth easing function
+    const easeProgress = progress * progress * (3 - 2 * progress);
+    
+    camera.position.x = startPosition.x + (targetPosition.x - startPosition.x) * easeProgress;
+    camera.position.y = startPosition.y + (targetPosition.y - startPosition.y) * easeProgress;
+    camera.position.z = startPosition.z + (targetPosition.z - startPosition.z) * easeProgress;
+    
+    if (progress < 1) {
+      requestAnimationFrame(updateCamera);
+    }
+  }
+  
+  updateCamera();
+}
+
+// Initialize navigation buttons
+createNavigationButtons();
+
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
