@@ -35,7 +35,7 @@ scene.add(new THREE.AmbientLight(0xffffff, 1));
 
 // sphere  
 const textureLoader = new THREE.TextureLoader();
-const earthTexture = textureLoader.load('/assets/imgs/Earth_map.png');
+const earthTexture = textureLoader.load('/assets/imgs/Tennisball_texture.jpg');
 const sphere = new THREE.Mesh(
   new THREE.SphereGeometry(3, 64, 64),
   new THREE.MeshBasicMaterial({ 
