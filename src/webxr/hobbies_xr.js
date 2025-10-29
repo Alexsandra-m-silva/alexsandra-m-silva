@@ -11,7 +11,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Scene with a white background
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff);
+scene.background = new THREE.Color(0x000000);
 
 // Camera
 const camera = new THREE.PerspectiveCamera(
@@ -30,8 +30,8 @@ controls.addEventListener('change', () => {
   console.log('Camera zoom:', camera.zoom);
 });
 
-// Ambient light
-scene.add(new THREE.AmbientLight(0xffffff, 1));
+// Ambient light (reduced intensity to prevent washing out textures)
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
 
 // sphere  
 const textureLoader = new THREE.TextureLoader();
@@ -70,12 +70,22 @@ gltfLoader.load('/assets/imgs/tennis_racket_wilson_blade.glb', (gltf) => {
 });
 
 // Scenario Cube
+// Load kite texture for the blue face (top face)
+const kiteTextureLoader = new THREE.TextureLoader();
+const kiteTexture = kiteTextureLoader.load('/assets/imgs/kite.png');
+
+// Configure texture to prevent washing out
+kiteTexture.colorSpace = THREE.SRGBColorSpace;
+
 const cubeMaterials = [
-  new THREE.MeshBasicMaterial({ color: 0xff0000 }), // right
-  new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // left
-  new THREE.MeshBasicMaterial({ color: 0x0000ff }), // top
-  new THREE.MeshBasicMaterial({ color: 0xffff00 }), // bottom
-  new THREE.MeshBasicMaterial({ color: 0xff3e00 }), // front
+  new THREE.MeshBasicMaterial({ color: 0xff0000 }), // right - red
+  new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // left - green
+  new THREE.MeshBasicMaterial({ 
+    map: kiteTexture,
+    toneMapped: false // Prevent tone mapping from washing out the texture
+  }), // top - kite texture
+  new THREE.MeshBasicMaterial({ color: 0xffff00 }), // bottom - yellow
+  new THREE.MeshBasicMaterial({ color: 0xff3e00 }), // front - orange
   new THREE.MeshBasicMaterial({ color: 0xff3e00 })  // back - orange
 ];
 const cube = new THREE.Mesh(
@@ -87,10 +97,153 @@ cube.position.set(0, 0, -100); // Center of the scene
 cube.rotation.set( 0, 0, Math.PI / 3); // Front face toward user
 scene.add(cube);
 
+// Colored spheres for kite surf view (view 2)
+function createKiteSurfSpheres() {
+  const spheres = [];
+  const colors = [
+    0xff0000, // red
+    0x00ff00, // green
+    0x0000ff, // blue
+    0xffff00, // yellow
+    0xff00ff, // magenta
+    0x00ffff, // cyan
+    0xff8000, // orange
+    0x8000ff, // purple
+    0x00ff80, // lime
+    0x80ff00, // chartreuse
+    0xff0080, // rose
+    0x0080ff, // azure
+    0x808080, // gray
+    0x800000, // maroon
+    0x008000, // dark green
+    0x000080, // navy
+    0x800080, // dark purple
+    0x008080, // teal
+    0x404040, // dark gray
+    0xc0c0c0  // light gray
+  ];
+
+  // Define sphere positions in a pattern similar to the attached image
+  // Starting from center and expanding to the right
+  const spherePositions = [
+    // Center cluster (face-like pattern)
+    { x: -140, y: 110, z: -50 }, // center-left eye area
+    { x: -135, y: 115, z: -52 }, // left eye
+    { x: -132, y: 108, z: -48 }, // right eye area
+    { x: -138, y: 105, z: -45 }, // nose area
+    { x: -140, y: 100, z: -47 }, // mouth area
+    { x: -142, y: 102, z: -50 }, // left cheek
+    { x: -130, y: 103, z: -49 }, // right cheek
+    
+    // Expanding pattern to the right
+    { x: -125, y: 112, z: -46 }, 
+    { x: -120, y: 108, z: -44 },
+    { x: -115, y: 105, z: -42 },
+    { x: -110, y: 110, z: -40 },
+    { x: -105, y: 107, z: -38 },
+    { x: -100, y: 104, z: -36 },
+    
+    // Scattered dots extending further right
+    { x: -95, y: 115, z: -34 },
+    { x: -90, y: 101, z: -32 },
+    { x: -85, y: 108, z: -30 },
+    { x: -80, y: 112, z: -28 },
+    { x: -75, y: 106, z: -26 },
+    { x: -70, y: 109, z: -24 },
+    { x: -65, y: 103, z: -22 }
+  ];
+
+  // Create spheres with different colors
+  spherePositions.forEach((position, index) => {
+    const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+    const sphereMaterial = new THREE.MeshBasicMaterial({ 
+      color: colors[index % colors.length],
+      transparent: true,
+      opacity: 0.8
+    });
+    
+    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    sphere.position.set(position.x, position.y, position.z);
+    
+    // Add some random rotation for visual interest
+    sphere.rotation.set(
+      Math.random() * Math.PI,
+      Math.random() * Math.PI,
+      Math.random() * Math.PI
+    );
+    
+    spheres.push(sphere);
+    scene.add(sphere);
+  });
+
+  return spheres;
+}
+
+// Function to create lines from spheres to blue cube face center
+function createSpheresToCubeLines(spheres) {
+  const lines = [];
+  
+  // Calculate the center of the blue (top) face of the cube
+  // The cube is at (0, 0, -100) with rotation (0, 0, Math.PI/3)
+  // Blue face is the top face, so we need to find its center after rotation
+  const cubeCenter = new THREE.Vector3(0, 0, -100);
+  const cubeFaceOffset = new THREE.Vector3(0, 55, 0); // Half of cube height (110/2)
+  
+  // Apply the cube's rotation to the face offset
+  const cubeRotation = new THREE.Euler(0, 0, Math.PI / 3);
+  cubeFaceOffset.applyEuler(cubeRotation);
+  
+  // Calculate the actual center of the blue face
+  const blueFaceCenter = cubeCenter.clone().add(cubeFaceOffset);
+  
+  // Select only 4 spheres - 2 from left side and 2 from right side
+  const selectedSphereIndices = [
+    1,  // Left side sphere (left eye area)
+    5,  // Left side sphere (left cheek)
+    16, // Right side sphere 
+    19  // Right side sphere (rightmost)
+  ];
+  
+  // Create lines only for selected spheres
+  selectedSphereIndices.forEach((sphereIndex) => {
+    if (sphereIndex < spheres.length) {
+      const sphere = spheres[sphereIndex];
+      const spherePosition = sphere.position.clone();
+      
+      // Create line geometry
+      const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+        spherePosition,
+        blueFaceCenter
+      ]);
+      
+      // Create line material with a subtle color
+      const lineMaterial = new THREE.LineBasicMaterial({
+        color: 0x808080, // Gray color
+        transparent: true,
+        opacity: 0.6,
+        linewidth: 1
+      });
+      
+      // Create the line
+      const line = new THREE.Line(lineGeometry, lineMaterial);
+      lines.push(line);
+      scene.add(line);
+    }
+  });
+  
+  return lines;
+}
+
+// Create the kite surf spheres
+const kiteSurfSpheres = createKiteSurfSpheres();
+
+// Create lines from spheres to blue cube face
+const sphereLines = createSpheresToCubeLines(kiteSurfSpheres);
+
 // Camera positions array
 const cameraPositions = [
   { x: 0, y: 0, z: 20 }, // tennis view 1
-  { x: -149, y: 101, z: -58 }
+  { x: -149, y: 101, z: -58 } // kite surf view 2
 ];
 
 let currentPositionIndex = 0;
