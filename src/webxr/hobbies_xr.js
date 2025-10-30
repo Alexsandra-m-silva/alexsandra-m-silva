@@ -243,7 +243,8 @@ const sphereLines = createSpheresToCubeLines(kiteSurfSpheres);
 // Camera positions array
 const cameraPositions = [
   { x: 0, y: 0, z: 20 }, // tennis view 1
-  { x: -223, y: 123, z: -127 } // kite surf view 2
+  { x: -223, y: 123, z: -127 }, // kite surf view 2
+  { x: -2, y: -20, z: -231 }  // meditation view 3
 ];
 
 let currentPositionIndex = 0;
