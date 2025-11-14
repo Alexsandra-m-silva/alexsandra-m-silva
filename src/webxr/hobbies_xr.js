@@ -82,11 +82,11 @@ const cubeMaterials = [
   new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // left - green
   new THREE.MeshBasicMaterial({ 
     map: kiteTexture,
-    toneMapped: false // Prevent tone mapping from washing out the texture
+    toneMapped: false 
   }), // top - kite texture
   new THREE.MeshBasicMaterial({ color: 0xffff00 }), // bottom - yellow
   new THREE.MeshBasicMaterial({ color: 0xff3e00 }), // front - orange
-  new THREE.MeshBasicMaterial({ color: 0xff3e00 })  // back - orange
+  new THREE.MeshBasicMaterial({ color: 0x000000 })  // back - meditation face
 ];
 const cube = new THREE.Mesh(
   new THREE.BoxGeometry(110, 110, 110),
@@ -96,6 +96,79 @@ const cube = new THREE.Mesh(
 cube.position.set(0, 0, -100); // Center of the scene
 cube.rotation.set( 0, 0, Math.PI / 3); // Front face toward user
 scene.add(cube);
+
+// Black hole particle system for the back face
+function createBlackHoleParticles() {
+  const particleCount = 2500;
+  const particles = [];
+  const particleGeometry = new THREE.BufferGeometry();
+  
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
+  const sizes = new Float32Array(particleCount);
+  
+  // Calculate the back face center of the cube (considering rotation)
+  const cubeBackCenter = new THREE.Vector3(0, 0, -155); // cube center z + half depth
+  
+  // Create particle data
+  for (let i = 0; i < particleCount; i++) {
+    const particle = {
+      id: i,
+      orbital: Math.random() * 30 + 10, // orbital distance from center (much smaller range: 10-40)
+      speed: (Math.random() * 1.0 + 1.5) * Math.PI / 180, // rotation speed
+      rotation: 0,
+      startRotation: Math.random() * 2 * Math.PI, // starting angle
+      x: cubeBackCenter.x,
+      y: cubeBackCenter.y,
+      z: cubeBackCenter.z,
+      collapseBonus: 0,
+      alpha: 1 - (Math.random() * 0.5), // varying opacity
+      size: Math.random() * 2 + 1
+    };
+    
+    // Position particles in orbit around the black hole center
+    const angle = particle.startRotation;
+    particle.x = cubeBackCenter.x + Math.cos(angle) * particle.orbital;
+    particle.y = cubeBackCenter.y + Math.sin(angle) * particle.orbital;
+    
+    particles.push(particle);
+    
+    // Set initial positions
+    positions[i * 3] = particle.x;
+    positions[i * 3 + 1] = particle.y;
+    positions[i * 3 + 2] = particle.z;
+    
+    // Orange color with varying intensity
+    const intensity = 0.5 + Math.random() * 0.5;
+    colors[i * 3] = 1.0 * intensity;     // Red component
+    colors[i * 3 + 1] = 0.5 * intensity; // Green component  
+    colors[i * 3 + 2] = 0.0;             // Blue component
+    
+    sizes[i] = particle.size;
+  }
+  
+  particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+  
+  // Particle material
+  const particleMaterial = new THREE.PointsMaterial({
+    size: 2,
+    sizeAttenuation: true,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.8,
+    blending: THREE.AdditiveBlending
+  });
+  
+  const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+  scene.add(particleSystem);
+  
+  return { particles, particleGeometry, particleSystem };
+}
+
+// Create the black hole particle system
+const blackHoleSystem = createBlackHoleParticles();
 
 // Colored spheres for kite surf view (view 2)
 function createKiteSurfSpheres() {
@@ -372,6 +445,38 @@ createNavigationButtons();
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
+  
+  // Update black hole particles
+  const time = Date.now() * 0.001;
+  const positions = blackHoleSystem.particleGeometry.attributes.position.array;
+  const cubeBackCenter = new THREE.Vector3(0, 0, -155);
+  
+  for (let i = 0; i < blackHoleSystem.particles.length; i++) {
+    const particle = blackHoleSystem.particles[i];
+    
+    // Update rotation - all particles rotate in the same direction (clockwise)
+    // Particles closer to center rotate faster (like a real accretion disk)
+    const distanceFactor = particle.orbital / 40; // normalize distance (max orbital is now 40)
+    const baseSpeed = 0.5; // base rotation speed
+    const speed = baseSpeed / (distanceFactor + 0.1); // closer particles move faster
+    
+    particle.rotation = particle.startRotation + (time * speed);
+    
+    // Calculate position in circular orbit (no spiral, just pure circular motion)
+    particle.x = cubeBackCenter.x + Math.cos(particle.rotation) * particle.orbital;
+    particle.y = cubeBackCenter.y + Math.sin(particle.rotation) * particle.orbital;
+    
+    // Keep z position constant (no vertical oscillation for clean circular motion)
+    particle.z = cubeBackCenter.z;
+    
+    // Update buffer positions
+    positions[i * 3] = particle.x;
+    positions[i * 3 + 1] = particle.y;
+    positions[i * 3 + 2] = particle.z;
+  }
+  
+  blackHoleSystem.particleGeometry.attributes.position.needsUpdate = true;
+  
   controls.update();
   renderer.render(scene, camera);
 }
