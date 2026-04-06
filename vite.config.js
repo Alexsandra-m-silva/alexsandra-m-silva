@@ -7,8 +7,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
-        hobbies: './public/Pages/hobbies.html'
+        hobbies: './hobbies.html'
       }
     }
   },
+  publicDir: 'public'
 });
