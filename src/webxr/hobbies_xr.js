@@ -97,79 +97,6 @@ cube.position.set(0, 0, -100); // Center of the scene
 cube.rotation.set( 0, 0, Math.PI / 3); // Front face toward user
 scene.add(cube);
 
-// Black hole particle system for the back face
-function createBlackHoleParticles() {
-  const particleCount = 2500;
-  const particles = [];
-  const particleGeometry = new THREE.BufferGeometry();
-  
-  const positions = new Float32Array(particleCount * 3);
-  const colors = new Float32Array(particleCount * 3);
-  const sizes = new Float32Array(particleCount);
-  
-  // Calculate the back face center of the cube (considering rotation)
-  const cubeBackCenter = new THREE.Vector3(0, 0, -155); // cube center z + half depth
-  
-  // Create particle data
-  for (let i = 0; i < particleCount; i++) {
-    const particle = {
-      id: i,
-      orbital: Math.random() * 30 + 10, // orbital distance from center (much smaller range: 10-40)
-      speed: (Math.random() * 1.0 + 1.5) * Math.PI / 180, // rotation speed
-      rotation: 0,
-      startRotation: Math.random() * 2 * Math.PI, // starting angle
-      x: cubeBackCenter.x,
-      y: cubeBackCenter.y,
-      z: cubeBackCenter.z,
-      collapseBonus: 0,
-      alpha: 1 - (Math.random() * 0.5), // varying opacity
-      size: Math.random() * 2 + 1
-    };
-    
-    // Position particles in orbit around the black hole center
-    const angle = particle.startRotation;
-    particle.x = cubeBackCenter.x + Math.cos(angle) * particle.orbital;
-    particle.y = cubeBackCenter.y + Math.sin(angle) * particle.orbital;
-    
-    particles.push(particle);
-    
-    // Set initial positions
-    positions[i * 3] = particle.x;
-    positions[i * 3 + 1] = particle.y;
-    positions[i * 3 + 2] = particle.z;
-    
-    // Orange color with varying intensity
-    const intensity = 0.5 + Math.random() * 0.5;
-    colors[i * 3] = 1.0 * intensity;     // Red component
-    colors[i * 3 + 1] = 0.5 * intensity; // Green component  
-    colors[i * 3 + 2] = 0.0;             // Blue component
-    
-    sizes[i] = particle.size;
-  }
-  
-  particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-  
-  // Particle material
-  const particleMaterial = new THREE.PointsMaterial({
-    size: 2,
-    sizeAttenuation: true,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.8,
-    blending: THREE.AdditiveBlending
-  });
-  
-  const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-  scene.add(particleSystem);
-  
-  return { particles, particleGeometry, particleSystem };
-}
-
-// Create the black hole particle system
-const blackHoleSystem = createBlackHoleParticles();
-
 // Colored spheres for kite surf view (view 2)
 function createKiteSurfSpheres() {
   const spheres = [];
@@ -439,6 +366,147 @@ function animateCameraTo(targetPosition) {
   updateCamera();
 }
 
+// Create stargazing scene for meditation view (view 3)
+function createStarGazingScene() {
+  // Create twinkling stars field
+  const starCount = 800;
+  const starGeometry = new THREE.BufferGeometry();
+  const starPositions = new Float32Array(starCount * 3);
+  const starOpacities = new Float32Array(starCount);
+  
+  for (let i = 0; i < starCount; i++) {
+    starPositions[i * 3] = (Math.random() - 0.5) * 400;
+    starPositions[i * 3 + 1] = (Math.random() - 0.5) * 400;
+    starPositions[i * 3 + 2] = (Math.random() - 0.5) * 400 - 150;
+    starOpacities[i] = Math.random();
+  }
+  
+  starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  starGeometry.setAttribute('opacity', new THREE.BufferAttribute(starOpacities, 1));
+  
+  const starMaterial = new THREE.PointsMaterial({
+    size: 2,
+    sizeAttenuation: true,
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.8,
+    emissive: 0xffffff,
+    emissiveIntensity: 0.5
+  });
+  
+  const stars = new THREE.Points(starGeometry, starMaterial);
+  scene.add(stars);
+  
+  return { stars, opacities: starOpacities, geometry: starGeometry };
+}
+
+// Create glowing particles representing data/code flow
+function createDataFlowParticles() {
+  const particleCount = 400;
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
+  const sizes = new Float32Array(particleCount);
+  
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 200;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 100 - 150;
+    
+    const hue = Math.random();
+    const colors_hsl = new THREE.Color().setHSL(hue, 1, 0.5);
+    colors[i * 3] = colors_hsl.r;
+    colors[i * 3 + 1] = colors_hsl.g;
+    colors[i * 3 + 2] = colors_hsl.b;
+    
+    sizes[i] = Math.random() * 1.5 + 0.5;
+  }
+  
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+  
+  const material = new THREE.PointsMaterial({
+    size: 1,
+    sizeAttenuation: true,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.6,
+    emissive: 0xffffff,
+    emissiveIntensity: 0.3
+  });
+  
+  const particles = new THREE.Points(geometry, material);
+  scene.add(particles);
+  
+  return { particles, positions, colors, geometry, particleData: new Array(particleCount).fill(0).map(() => ({
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5,
+    vz: (Math.random() - 0.5) * 0.5
+  })) };
+}
+
+// Create a glowing terminal/IDE visualization
+function createFloatingTerminal() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 384;
+  const ctx = canvas.getContext('2d');
+  
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+  
+  // Terminal header
+  ctx.fillStyle = '#30363d';
+  ctx.fillRect(5, 5, canvas.width - 10, 40);
+  ctx.fillStyle = '#c9d1d9';
+  ctx.font = 'bold 18px monospace';
+  ctx.fillText('~/projects/ > ', 20, 30);
+  
+  // Terminal text
+  const terminalLines = [
+    '$ npm run dev',
+    '> My name is Alexsandra...',
+    '> I am currently pursuing a degree in Computer Science at the University of London...',
+    '> While delivering amazing Microsoft Power Platform projects through Europe with Infoavan...',
+    '> Compiling dreams into reality ✨',
+    '> [████████████░░░░░░░░░░░░] 50%'
+  ];
+  
+  ctx.fillStyle = '#58a6ff';
+  ctx.font = '16px monospace';
+  terminalLines.forEach((line, i) => {
+    ctx.fillText(line, 20, 80 + i * 50);
+  });
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  const material = new THREE.MeshBasicMaterial({ 
+    map: texture,
+    emissive: 0x1f6feb,
+    emissiveIntensity: 0.4
+  });
+  const geometry = new THREE.PlaneGeometry(160, 60);
+  const mesh = new THREE.Mesh(geometry, material);
+  
+  mesh.position.set(0, -10, -160);
+  mesh.rotation.x = 0;
+  mesh.rotation.y = Math.PI;
+  mesh.rotation.z = 0;
+  mesh.userData.isStatic = true;
+  
+  scene.add(mesh);
+  return mesh;
+}
+
+// Initialize stargazing scene elements
+const starGazingScene = createStarGazingScene();
+const dataFlow = createDataFlowParticles();
+const terminal = createFloatingTerminal();
+
 // Initialize navigation buttons
 createNavigationButtons();
 
@@ -446,36 +514,36 @@ createNavigationButtons();
 function animate() {
   requestAnimationFrame(animate);
   
-  // Update black hole particles
-  const time = Date.now() * 0.001;
-  const positions = blackHoleSystem.particleGeometry.attributes.position.array;
-  const cubeBackCenter = new THREE.Vector3(0, 0, -155);
-  
-  for (let i = 0; i < blackHoleSystem.particles.length; i++) {
-    const particle = blackHoleSystem.particles[i];
-    
-    // Update rotation - all particles rotate in the same direction (clockwise)
-    // Particles closer to center rotate faster (like a real accretion disk)
-    const distanceFactor = particle.orbital / 40; // normalize distance (max orbital is now 40)
-    const baseSpeed = 0.5; // base rotation speed
-    const speed = baseSpeed / (distanceFactor + 0.1); // closer particles move faster
-    
-    particle.rotation = particle.startRotation + (time * speed);
-    
-    // Calculate position in circular orbit (no spiral, just pure circular motion)
-    particle.x = cubeBackCenter.x + Math.cos(particle.rotation) * particle.orbital;
-    particle.y = cubeBackCenter.y + Math.sin(particle.rotation) * particle.orbital;
-    
-    // Keep z position constant (no vertical oscillation for clean circular motion)
-    particle.z = cubeBackCenter.z;
-    
-    // Update buffer positions
-    positions[i * 3] = particle.x;
-    positions[i * 3 + 1] = particle.y;
-    positions[i * 3 + 2] = particle.z;
+  // Animate twinkling stars
+  const starOpacities = starGazingScene.opacities;
+  for (let i = 0; i < starOpacities.length; i++) {
+    starOpacities[i] += (Math.random() - 0.5) * 0.05;
+    starOpacities[i] = Math.max(0.2, Math.min(1, starOpacities[i]));
   }
+  starGazingScene.geometry.attributes.opacity.needsUpdate = true;
   
-  blackHoleSystem.particleGeometry.attributes.position.needsUpdate = true;
+  // Update star material opacity
+  const time = Date.now() * 0.001;
+  starGazingScene.stars.material.opacity = 0.6 + Math.sin(time * 2) * 0.2;
+  
+  // Animate data flow particles - moving with velocities
+  const dataPositions = dataFlow.positions;
+  const dataParticleData = dataFlow.particleData;
+  
+  for (let i = 0; i < dataParticleData.length; i++) {
+    const particle = dataParticleData[i];
+    dataPositions[i * 3] += particle.vx;
+    dataPositions[i * 3 + 1] += particle.vy;
+    dataPositions[i * 3 + 2] += particle.vz;
+    
+    // Bounce off boundaries
+    if (Math.abs(dataPositions[i * 3]) > 150) particle.vx *= -1;
+    if (Math.abs(dataPositions[i * 3 + 1]) > 150) particle.vy *= -1;
+    if (Math.abs(dataPositions[i * 3 + 2]) > 100) particle.vz *= -1;
+  }
+  dataFlow.geometry.attributes.position.needsUpdate = true;
+  
+  // Terminal is static - no animation needed
   
   controls.update();
   renderer.render(scene, camera);
