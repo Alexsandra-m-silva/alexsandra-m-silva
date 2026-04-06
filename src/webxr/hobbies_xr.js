@@ -35,7 +35,7 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.7));
 
 // sphere  
 const textureLoader = new THREE.TextureLoader();
-const earthTexture = textureLoader.load('/assets/imgs/Tennisball_texture.jpg');
+const earthTexture = textureLoader.load('./assets/imgs/Tennisball_texture.jpg');
 const sphere = new THREE.Mesh(
   new THREE.SphereGeometry(3, 64, 64),
   new THREE.MeshBasicMaterial({ 
@@ -60,7 +60,7 @@ scene.add(sphere2);
 // 3D Tennis racket model
 let racket;
 const gltfLoader = new GLTFLoader();
-gltfLoader.load('/assets/imgs/tennis_racket_wilson_blade.glb', (gltf) => {
+gltfLoader.load('./assets/imgs/tennis_racket_wilson_blade.glb', (gltf) => {
   racket = gltf.scene;
   racket.position.set(-20, -15, -45); // under the sphere
   racket.scale.set(5, 5, 5);
@@ -72,7 +72,7 @@ gltfLoader.load('/assets/imgs/tennis_racket_wilson_blade.glb', (gltf) => {
 // Scenario Cube
 // Load kite texture for the blue face (top face)
 const kiteTextureLoader = new THREE.TextureLoader();
-const kiteTexture = kiteTextureLoader.load('/assets/imgs/kite.png');
+const kiteTexture = kiteTextureLoader.load('./assets/imgs/kite.png');
 
 // Configure texture to prevent washing out
 kiteTexture.colorSpace = THREE.SRGBColorSpace;
